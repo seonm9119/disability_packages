@@ -1,5 +1,3 @@
 from .utils import *
 
-import trainer
-import datasets
-import models
+from trainer.utils import *
