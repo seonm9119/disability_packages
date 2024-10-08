@@ -1,2 +1,4 @@
 pandas
 moviepy
+torch
+librosa

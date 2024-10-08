@@ -7,4 +7,4 @@ setup(name='disability',
       author='nami',
       author_email='seonm9119@gmail.com',
       packages=find_packages(include=['disability', 'organizer']),
-      install_requires=['pandas', 'moviepy'])
+      install_requires=['pandas', 'moviepy', 'librosa'])
