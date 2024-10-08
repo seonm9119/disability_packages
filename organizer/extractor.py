@@ -1,5 +1,4 @@
 import os
-import glob
 from moviepy.editor import VideoFileClip
 from organizer.utils import filter_unique_audio
 
