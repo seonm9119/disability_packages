@@ -33,19 +33,24 @@ def modify_landmarks(results, landmark='face'):
     if landmarks is not None:
         modified_landmarks = [landmarks.landmark[i] for i in LANDMARKS[landmark]]
         return np.array([[ln.x, ln.y, ln.z] for ln in modified_landmarks])
-
-    return np.zeros((1, len(LANDMARKS[landmark]), 3))
+    
+    return None
 
 
 def extract_landmarks(video_path, file_path, landmark='face'):
     mp_holistic = mp.solutions.holistic
-
     cap = cv2.VideoCapture(video_path)
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    idx = 0
-    modified_landmarks = np.zeros((frame_count, len(LANDMARKS[landmark]), 3))
-    # Run MediaPipe Holistic and draw pose landmarks.
+    # Check if there are sufficient frames in the video
+    if frame_count < 10:
+        print(f"Extraction failed because the number of frames is less than 10 : {video_path}")
+        cap.release()
+        return
+
+
+    # Initialize array to store landmarks
+    modified_landmarks = np.zeros((1, len(LANDMARKS[landmark]), 3))
 
     with mp_holistic.Holistic(
         static_image_mode=True, min_detection_confidence=0.5, model_complexity=2) as holistic:
@@ -57,10 +62,17 @@ def extract_landmarks(video_path, file_path, landmark='face'):
             
             # Convert the BGR image to RGB and process it with MediaPipe Pose.
             results = holistic.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-            modified_landmarks[idx] = modify_landmarks(results, landmark)
-            idx +=1
+            keypoints = modify_landmarks(results, landmark)
 
-    if not os.path.exists(file_path):
-        np.save(file_path, modified_landmarks)
+            # Append valid keypoints
+            if keypoints is not None:
+                modified_landmarks = np.vstack([modified_landmarks, keypoints[np.newaxis, :]])
 
     cap.release()
+
+    if len(modified_landmarks) > 10 and not os.path.exists(file_path):
+        np.save(file_path, modified_landmarks[1:])  # Remove initial placeholder
+
+    
+
+    

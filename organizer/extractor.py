@@ -11,20 +11,21 @@ def landmarks_extractor(source_folder, landmark='face'):
 
     mp4_files = os.listdir(f"{source_folder}/video")
 
-    for video_path in mp4_files:
-        file_path = os.path.join(path, f"{video_path.split('.')[0]}.npy")
+    for _path in mp4_files:
+        video_path = os.path.join(source_folder, 'video', _path)
+        file_path = os.path.join(path, f"{_path.split('.')[0]}.npy")
 
         if not os.path.exists(file_path):
             extract_landmarks(video_path, file_path, landmark)
 
 
 def face_extractor(source_folder):
+    landmarks_extractor(source_folder, landmark='face')
     print(f"Face extraction completed for the folder: {source_folder}")
-    return landmarks_extractor(source_folder, landmark='face')
-
+    
 def pose_extractor(source_folder):
+    landmarks_extractor(source_folder, landmark='pose')
     print(f"Pose extraction completed for the folder: {source_folder}")
-    return landmarks_extractor(source_folder, landmark='pose')
 
 def audio_extractor(source_folder):
     """
