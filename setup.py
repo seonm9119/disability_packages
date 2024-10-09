@@ -7,4 +7,4 @@ setup(name='disability',
       author='nami',
       author_email='seonm9119@gmail.com',
       packages=find_packages(),
-      install_requires=['pandas', 'moviepy', 'librosa', 'torch'])
+      install_requires=['pandas', 'moviepy', 'librosa', 'torch', 'mediapipe'])

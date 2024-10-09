@@ -2,3 +2,4 @@ pandas
 moviepy
 torch
 librosa
+mediapipe

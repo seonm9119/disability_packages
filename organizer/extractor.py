@@ -1,7 +1,30 @@
 import os
 from moviepy.editor import VideoFileClip
-from organizer.utils import filter_unique_audio
+from .utils import filter_unique_audio
+from .landmarks import extract_landmarks
 
+def landmarks_extractor(source_folder, landmark='face'):
+    # Create a subdirectory 'audio' in the source folder if it doesn't already exist
+    path = os.path.join(source_folder, landmark)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    mp4_files = os.listdir(f"{source_folder}/video")
+
+    for video_path in mp4_files:
+        file_path = os.path.join(path, f"{video_path.split('.')[0]}.npy")
+
+        if not os.path.exists(file_path):
+            extract_landmarks(video_path, file_path, landmark)
+
+
+def face_extractor(source_folder):
+    print(f"Face extraction completed for the folder: {source_folder}")
+    return landmarks_extractor(source_folder, landmark='face')
+
+def pose_extractor(source_folder):
+    print(f"Pose extraction completed for the folder: {source_folder}")
+    return landmarks_extractor(source_folder, landmark='pose')
 
 def audio_extractor(source_folder):
     """
