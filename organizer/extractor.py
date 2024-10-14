@@ -2,6 +2,26 @@ import os
 from moviepy.editor import VideoFileClip
 from .utils import filter_unique_audio
 from .landmarks import extract_landmarks
+from .optical_flow import extract_optical_flow
+
+
+def flow_extractor(source_folder):
+    path = os.path.join(source_folder, 'flow')
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    mp4_files = os.listdir(f"{source_folder}/video")
+
+    for _path in mp4_files:
+        video_path = os.path.join(source_folder, 'video', _path)
+        file_path = os.path.join(path, f"{_path.split('.')[0]}.npy")
+
+        if not os.path.exists(file_path):
+            extract_optical_flow(video_path, file_path)
+    
+    print(f"Optical Flow extraction completed for the folder: {source_folder}")
+
+
 
 def landmarks_extractor(source_folder, landmark='face'):
     # Create a subdirectory 'audio' in the source folder if it doesn't already exist
@@ -23,9 +43,6 @@ def face_extractor(source_folder):
     landmarks_extractor(source_folder, landmark='face')
     print(f"Face extraction completed for the folder: {source_folder}")
     
-def pose_extractor(source_folder):
-    landmarks_extractor(source_folder, landmark='pose')
-    print(f"Pose extraction completed for the folder: {source_folder}")
 
 def audio_extractor(source_folder):
     """

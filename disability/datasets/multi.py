@@ -84,14 +84,18 @@ def load_datasets(config, file_path=None, ratio=0.1, mode='face'):
 
 
 import torch
-from torch.utils.data import Dataset, DataLoader
 import librosa
+from torch.utils.data import Dataset, DataLoader
+from pytorchvideo.transforms import UniformTemporalSubsample
+
 
 class MultiDataset(Dataset):
-    def __init__(self, df, mode='face'):
+    def __init__(self, df, num_samples, mode='face', ):
         self.audio = df['audio_path']
         self.face = df[f'{mode}_path']
         self.labels = df['label']
+
+        self.transform = UniformTemporalSubsample(num_samples=num_samples)
         assert(len(self.audio) == len(self.labels))
     
     def __len__(self):
@@ -110,33 +114,25 @@ class MultiDataset(Dataset):
     
     def __getitem__(self, idx):
         audio_seq = self.mfcc_data(self.audio[idx])
+
         landmark = torch.from_numpy(np.load(self.face[idx])).to(torch.float32)
+        landmark = landmark.unsqueeze(0)
+        landmark = self.transform(landmark).squeeze(0)
+
         label = int(self.labels[idx])
 
-        return audio_seq, landmark, label
+        return {'input' :{'audio' : audio_seq, 'face': landmark}, 'label':label}
 
-import torch
-from torch.nn.utils.rnn import pad_sequence
-def collate_fn(batch):
-    audio, face, labels = zip(*batch)  # Unzip the batch into data and labels
 
-    # Pad the data sequences
-    padded_data = pad_sequence([d.clone().detach() for d in face], batch_first=True, padding_value=100)
-    labels = torch.tensor(labels, dtype=torch.int64)
-    audio = torch.tensor(audio).to(dtype=torch.float32)
-
-    return {'input' :{'audio' : audio, 'face': padded_data}, 'label':labels}
-
-def build_loader(config, file_path=None, ratio=0.1, mode='face'):  
+def build_loader(config, file_path=None, ratio=0.1, num_samples=50, mode='face'):  
     set_seed(config.seed)
     df = load_datasets(config, file_path, ratio, mode)
 
     loaders = {}
     for key, _df in df.items():
-        datasets = MultiDataset(_df, mode)
+        datasets = MultiDataset(_df, mode, num_samples)
         loaders[key] = DataLoader(datasets, 
                                   batch_size=config.batch_size, 
-                                  shuffle=True,
-                                  collate_fn=collate_fn)
+                                  shuffle=True)
         
     return loaders
