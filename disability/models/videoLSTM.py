@@ -7,7 +7,8 @@ class VideoLSTM(nn.Module):
     def __init__(self, 
                  num_classes=2, 
                  hidden_size=128, 
-                 num_layers=2):
+                 num_layers=2,
+                 pretrain=True):
         super(VideoLSTM, self).__init__()
         
         # CNN Feature Extractor (2D CNN)
