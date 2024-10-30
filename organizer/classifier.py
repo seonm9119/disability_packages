@@ -37,7 +37,7 @@ def _classify_files(source_folder, save_path='D:/disorder'):
         file_path = os.path.join(source_folder, file_name)  
         patterns = file_name.split("_")  
         file_extension = file_name.split(".")[1]  
-
+        
         # Skip files that are not .mp4
         if file_extension != 'mp4':
             continue
