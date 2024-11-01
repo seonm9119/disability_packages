@@ -1,6 +1,5 @@
 import os
 from moviepy.editor import VideoFileClip
-from .utils import filter_unique_audio
 from .landmarks import extract_landmarks
 from .optical_flow import extract_optical_flow
 
@@ -60,11 +59,8 @@ def audio_extractor(source_folder):
     # List all files in the 'video' subfolder of the source folder
     mp4_files = os.listdir(f"{source_folder}/video")
     
-    # Filter unique .mp4 files to avoid redundant audio extraction
-    unique_files = filter_unique_audio(mp4_files)
-
     # Extract and save audio from each unique .mp4 file
-    for file_path in unique_files:
+    for file_path in mp4_files:
         file_name = file_path.split('.')[0]
         
 
