@@ -1,1 +1,1 @@
-# disability_packages
+# 최중증장애인 의사소통 인식 모델
